@@ -6,6 +6,7 @@ import Category from "./components/Category";
 import Cart from "./components/Cart";
 
 const calculateTotal = (cart) => {
+  console.log("calculating total");
   let total = 0;
   for (let i = 0; i < cart.length; i++) {
     total = total + cart[i].quantity * cart[i].price;
@@ -14,6 +15,8 @@ const calculateTotal = (cart) => {
 };
 
 function App() {
+  console.log("App render");
+
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [cart, setCart] = useState([]);
@@ -25,7 +28,7 @@ function App() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://site--deliveroo-backend--5ytnmfswy69s.code.run/"
+          "https://site--deliveroo-backend--5ytnmfswy69s.code.run/",
         );
         setData(response.data);
         setIsLoading(false);
@@ -38,7 +41,7 @@ function App() {
 
   const handleAddToCart = useCallback((meal) => {
     setCart((prev) => {
-      const cartCopy = [...prev];
+      const cartCopy = structuredClone(prev);
       const mealPresent = cartCopy.find((elem) => elem.id === meal.id);
       if (mealPresent) mealPresent.quantity++;
       else cartCopy.push({ ...meal, quantity: 1 });
@@ -48,7 +51,7 @@ function App() {
 
   const handleRemoveFromCart = useCallback((meal) => {
     setCart((prev) => {
-      const cartCopy = [...prev];
+      const cartCopy = structuredClone(prev);
       const mealPresent = cartCopy.find((elem) => elem.id === meal.id);
       if (mealPresent.quantity === 1) {
         const index = cartCopy.indexOf(mealPresent);
@@ -60,7 +63,7 @@ function App() {
     });
   }, []);
 
-  let total = useMemo(() => calculateTotal(cart), [cart]);
+  const total = useMemo(() => calculateTotal(cart), [cart]);
 
   console.log("render");
 
@@ -68,7 +71,7 @@ function App() {
     <p>Loading...</p>
   ) : (
     <div className={`App ${theme === "white" ? "theme-white" : "theme-red"}`}>
-      <div className="container hero">
+      <div className="hero container">
         <div>
           <h1>{data.restaurant.name}</h1>
           <p>{data.restaurant.description}</p>
@@ -84,11 +87,11 @@ function App() {
         </button>
       </div>
       <div className="content">
-        <label className="container sections-container">
+        <label className="sections-container container">
           Search:
           <input type="text" ref={myInput} />
         </label>
-        <div className="container sections-container">
+        <div className="sections-container container">
           <section className="left-section">
             {data.categories.map((category, index) => {
               if (category.meals.length !== 0) {
@@ -114,7 +117,7 @@ function App() {
           </section>
         </div>
         <button
-          className="text-white px-4 sm:px-8 py-2 sm:py-3 bg-sky-700 hover:bg-sky-800"
+          className="bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3"
           onClick={() => {
             myInput.current.focus();
           }}

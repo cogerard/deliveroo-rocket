@@ -2,7 +2,7 @@ import { memo } from "react";
 import Meal from "./Meal";
 
 const Category = ({ category, handleAddToCart }) => {
-  console.log(category);
+  console.log("category render");
   return (
     <div className="category">
       <h2>{category.name}</h2>

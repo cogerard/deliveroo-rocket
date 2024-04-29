@@ -1,4 +1,5 @@
 const Meal = ({ meal, handleAddToCart }) => {
+  // console.log("meal render");
   return (
     <div
       className="meal"
