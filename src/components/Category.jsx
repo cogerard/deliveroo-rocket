@@ -1,6 +1,8 @@
+import { memo } from "react";
 import Meal from "./Meal";
 
 const Category = ({ category, handleAddToCart }) => {
+  console.log(category);
   return (
     <div className="category">
       <h2>{category.name}</h2>
@@ -15,4 +17,4 @@ const Category = ({ category, handleAddToCart }) => {
   );
 };
 
-export default Category;
+export default memo(Category);

@@ -1,4 +1,7 @@
+import { memo } from "react";
 const Cart = ({ cart, handleRemoveFromCart, handleAddToCart, total }) => {
+  console.log(cart);
+  console.log(total);
   return cart.length !== 0 ? (
     <div className="cart">
       {cart.map((meal) => {
@@ -34,4 +37,4 @@ const Cart = ({ cart, handleRemoveFromCart, handleAddToCart, total }) => {
   );
 };
 
-export default Cart;
+export default memo(Cart);

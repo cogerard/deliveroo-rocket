@@ -1,6 +1,6 @@
 import "./App.css";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 // Components
 import Category from "./components/Category";
 import Cart from "./components/Cart";
@@ -19,6 +19,8 @@ function App() {
   const [cart, setCart] = useState([]);
   const [theme, setTheme] = useState("white");
 
+  const myInput = useRef();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,38 +36,33 @@ function App() {
     fetchData();
   }, []);
 
-  const handleAddToCart = (meal) => {
+  const handleAddToCart = useCallback((meal) => {
     setCart((prev) => {
-      // const mealPresent = prev.find((elem) => elem.id === meal.id);
-      // console.log(mealPresent);
-      // if (mealPresent) prev.mealPresent.quantity++;
-      // else
-      prev.push({ ...meal, quantity: 1 });
-      console.log(prev);
+      const cartCopy = [...prev];
+      const mealPresent = cartCopy.find((elem) => elem.id === meal.id);
+      if (mealPresent) mealPresent.quantity++;
+      else cartCopy.push({ ...meal, quantity: 1 });
+      return cartCopy;
     });
-  };
+  }, []);
 
-  // const handleAddToCart = (meal) => {
-  //   const cartCopy = [...cart];
-  //   const mealPresent = cartCopy.find((elem) => elem.id === meal.id);
-  //   if (mealPresent) mealPresent.quantity++;
-  //   else cartCopy.push({ ...meal, quantity: 1 });
-  //   setCart(cartCopy);
-  // };
+  const handleRemoveFromCart = useCallback((meal) => {
+    setCart((prev) => {
+      const cartCopy = [...prev];
+      const mealPresent = cartCopy.find((elem) => elem.id === meal.id);
+      if (mealPresent.quantity === 1) {
+        const index = cartCopy.indexOf(mealPresent);
+        cartCopy.splice(index, 1);
+      } else {
+        mealPresent.quantity--;
+      }
+      return cartCopy;
+    });
+  }, []);
 
-  const handleRemoveFromCart = (meal) => {
-    const cartCopy = [...cart];
-    const mealPresent = cartCopy.find((elem) => elem.id === meal.id);
-    if (mealPresent.quantity === 1) {
-      const index = cartCopy.indexOf(mealPresent);
-      cartCopy.splice(index, 1);
-    } else {
-      mealPresent.quantity--;
-    }
-    setCart(cartCopy);
-  };
+  let total = useMemo(() => calculateTotal(cart), [cart]);
 
-  let total = calculateTotal(cart);
+  console.log("render");
 
   return isLoading ? (
     <p>Loading...</p>
@@ -87,6 +84,10 @@ function App() {
         </button>
       </div>
       <div className="content">
+        <label className="container sections-container">
+          Search:
+          <input type="text" ref={myInput} />
+        </label>
         <div className="container sections-container">
           <section className="left-section">
             {data.categories.map((category, index) => {
@@ -112,6 +113,14 @@ function App() {
             />
           </section>
         </div>
+        <button
+          className="theme-button"
+          onClick={() => {
+            myInput.current.focus();
+          }}
+        >
+          Search focus
+        </button>
       </div>
     </div>
   );
